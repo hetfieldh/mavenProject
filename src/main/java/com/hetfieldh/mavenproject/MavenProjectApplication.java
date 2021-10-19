@@ -1,5 +1,6 @@
 package com.hetfieldh.mavenproject;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +13,20 @@ import com.hetfieldh.mavenproject.domain.Cidade;
 import com.hetfieldh.mavenproject.domain.Cliente;
 import com.hetfieldh.mavenproject.domain.Endereco;
 import com.hetfieldh.mavenproject.domain.Estado;
+import com.hetfieldh.mavenproject.domain.Pagamento;
+import com.hetfieldh.mavenproject.domain.PagamentoComBoleto;
+import com.hetfieldh.mavenproject.domain.PagamentoComCartao;
+import com.hetfieldh.mavenproject.domain.Pedido;
 import com.hetfieldh.mavenproject.domain.Produto;
+import com.hetfieldh.mavenproject.enums.EstadoPagamento;
 import com.hetfieldh.mavenproject.enums.TipoCliente;
 import com.hetfieldh.mavenproject.repositories.CategoriaRepository;
 import com.hetfieldh.mavenproject.repositories.CidadeRepository;
 import com.hetfieldh.mavenproject.repositories.ClienteRepository;
 import com.hetfieldh.mavenproject.repositories.EnderecoRepository;
 import com.hetfieldh.mavenproject.repositories.EstadoRepository;
+import com.hetfieldh.mavenproject.repositories.PagamentoRepository;
+import com.hetfieldh.mavenproject.repositories.PedidoRepository;
 import com.hetfieldh.mavenproject.repositories.ProdutoRepository;
 
 @SpringBootApplication
@@ -36,6 +44,10 @@ public class MavenProjectApplication implements CommandLineRunner {
 	private ClienteRepository clienteRepository;
 	@Autowired
 	private EnderecoRepository enderecoRepository;
+	@Autowired
+	private PedidoRepository pedidoRepository;
+	@Autowired
+	private PagamentoRepository pagamentoRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(MavenProjectApplication.class, args);
@@ -43,6 +55,9 @@ public class MavenProjectApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
 		// instancia as categorias
 		Categoria cat1 = new Categoria(null, "Informatica");
 		Categoria cat2 = new Categoria(null, "Escritorio");
@@ -99,5 +114,19 @@ public class MavenProjectApplication implements CommandLineRunner {
 
 		// Salva os Estados no BD
 		enderecoRepository.saveAll(Arrays.asList(e1, e2));
+
+		Pedido ped1 = new Pedido(null, sdf.parse("30/09/2017 10:32"), cli1, e1);
+		Pedido ped2 = new Pedido(null, sdf.parse("10/10/2017 19:35"), cli1, e2);
+
+		Pagamento pagto1 = new PagamentoComCartao(null, EstadoPagamento.QUITADO, ped1, 6);
+		ped1.setPagamento(pagto1);
+
+		Pagamento pagto2 = new PagamentoComBoleto(null, EstadoPagamento.PENDENTE, ped2, sdf.parse("20/10/2017 00:00"), null);
+		ped2.setPagamento(pagto2);
+
+		cli1.getPedidos().addAll(Arrays.asList(ped1, ped2));
+
+		pedidoRepository.saveAll(Arrays.asList(ped1, ped2));
+		pagamentoRepository.saveAll(Arrays.asList(pagto1, pagto2));
 	}
 }
