@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.hetfieldh.mavenproject.enums.EstadoPagamento;
 
 @Entity
@@ -24,6 +25,7 @@ public abstract class Pagamento implements Serializable {
 	private Integer estado;
 
 	// associacao 1 para 1
+	@JsonBackReference
 	@OneToOne
 	@JoinColumn(name="pedido_id")
 	@MapsId
