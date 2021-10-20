@@ -15,8 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hetfieldh.mavenproject.enums.TipoCliente;
 
 @Entity
@@ -33,7 +32,6 @@ public class Cliente implements Serializable {
 	private Integer tipo; // o objeto armazenara um valor do tipo inteiro que vem do (TipoCliente ENUM)
 
 	// Relacao Cliente - Endereco (1 para *)
-	@JsonManagedReference
 	@OneToMany(mappedBy = "cliente")
 	private List<Endereco> enderecos = new ArrayList<>();
 
@@ -43,7 +41,7 @@ public class Cliente implements Serializable {
 	private Set<String> telefones = new HashSet<>();
 
 	// associacao 1 para *
-	@JsonBackReference
+	@JsonIgnore
 	@OneToMany
 	private List<Pedido> pedidos = new ArrayList<>();
 
